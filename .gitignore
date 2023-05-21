@@ -17,6 +17,7 @@ native/
 wrapper/
 .DS_Store
 /build
+kotlin-profile/
 /captures
 .externalNativeBuild
 .cxx
