@@ -3,6 +3,7 @@ package com.example.featureproductlist.productList
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,19 +26,24 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.core.composables.BoxWithLoadingIndicator
-import com.example.core.composables.WrappingText
+import com.example.coretheme.ui.composables.BoxWithLoadingIndicator
+import com.example.coretheme.ui.composables.WrappingText
 import com.example.core.extensions.toCurrencyString
 import com.example.coredata.data.models.apiproduct.Rating
 import com.example.coredata.data.models.appproduct.Product
 import com.example.coretheme.ui.theme.schmockPurple
 import com.example.featureproductlist.R
+import com.example.featureproductlist.SharedProductViewModel
+import com.example.featureproductlist.navigation.ProductRoutes
+import com.example.featureproductlist.util.Const
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun ProductListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ProductListViewModel = hiltViewModel()
+    viewModel: SharedProductViewModel
 ) {
     val pokemonList by remember { viewModel.productList }
     val loadError by remember { viewModel.loadErrorMessage }
@@ -67,7 +73,11 @@ fun ProductListScreen(
                 items(pokemonList) { productToDisplay ->
                     ProductItem(
                         product = productToDisplay,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onClick = {
+                            viewModel.selectProductToDisplay(productToDisplay)
+                            navController.navigate(ProductRoutes.ProductDetailScreen.route)
+                        }
                     )
                 }
             }
@@ -76,10 +86,11 @@ fun ProductListScreen(
     }
 }
 
+// used only here, no need to make it public
 @Composable
-fun ProductItem(product: Product, modifier: Modifier = Modifier) {
+private fun ProductItem(product: Product, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(
-        modifier = modifier,
+        modifier = modifier.clickable { onClick() },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -97,8 +108,10 @@ fun ProductItem(product: Product, modifier: Modifier = Modifier) {
     }
 }
 
+// not sure whether making private composables is a good practise, but I will try to separate
+// commonly used composables outside of a screen "class"
 @Composable
-fun TopAppBar(
+private fun TopAppBar(
     modifier: Modifier = Modifier, label: String = "", onSearchChanged: (newSearch: String) -> Unit
 ) {
     var searchQueryValue by remember {
@@ -133,21 +146,4 @@ fun TopAppBar(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun ProductPreview() {
-    ProductItem(
-        Product(
-            category = "Duh",
-            description = "DUh",
-            id = 1,
-            image = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
-            price = 109.95,
-            rating = Rating(0, 0.0),
-            title = "John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet",
-            size = "S"
-        )
-    )
 }

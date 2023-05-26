@@ -1,8 +1,6 @@
-package com.example.featureproductlist.productList
+package com.example.featureproductlist
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.util.Resource
@@ -14,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductListViewModel @Inject constructor(
+class SharedProductViewModel @Inject constructor(
     private val repository: FakeShopRepository
 ): ViewModel() {
 
@@ -24,6 +22,9 @@ class ProductListViewModel @Inject constructor(
 
     private var cachedProductList = listOf<Product>()
     private var isSearchStarting = true // only true if the search field is empty
+
+    var productToDisplay: Product? = null
+        private set
 
     init {
         getAllProducts()
@@ -48,13 +49,13 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun getAllProducts(){
+    private fun getAllProducts(){
         viewModelScope.launch {
             isLoading.value = true
             val result = repository.getAllProductsList()
             when(result.status) {
                 Resource.Status.ERROR -> {
-                    // I know using !! is not normally used BUT I HANDLED THAT in
+                    // I know !! is not normally used BUT I HANDLED THAT in
                     // FakeShopRepositoryImpl, so please take that into consideration
                     loadErrorMessage.value = result.message!!
                     isLoading.value = false
@@ -68,6 +69,10 @@ class ProductListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun selectProductToDisplay(product: Product) {
+        productToDisplay = product
     }
 
 }

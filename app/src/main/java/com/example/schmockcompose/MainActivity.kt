@@ -8,10 +8,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.coretheme.ui.theme.SchmockComposeTheme
-import com.example.featureproductlist.productList.ProductListScreen
+import com.example.featureproductlist.navigation.ProductRoutes
+import com.example.featureproductlist.navigation.productGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,14 +21,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             // I don't think I will be adding dark theme (at least for now)
             SchmockComposeTheme(darkTheme = false) {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
                     val mainNavController = rememberNavController()
-                    NavHost(navController = mainNavController, startDestination = "product_list_screen") {
-                        composable("product_list_screen") { ProductListScreen(navController = mainNavController) }
+                    NavHost(
+                        navController = mainNavController,
+                        startDestination = ProductRoutes.ProductGraph.route
+                    ) {
+                        productGraph(navController = mainNavController)
                     }
                 }
             }

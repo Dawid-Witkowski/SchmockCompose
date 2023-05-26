@@ -1,4 +1,4 @@
-package com.example.core.composables
+package com.example.coretheme.ui.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
