@@ -6,11 +6,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.coredata.data.models.appproduct.Product
 import com.example.featureproductlist.SharedProductViewModel
 import com.example.featureproductlist.productDetail.ProductDetailScreen
 import com.example.featureproductlist.productList.ProductListScreen
-import com.example.featureproductlist.util.Const
 
 
 fun NavGraphBuilder.productGraph(
