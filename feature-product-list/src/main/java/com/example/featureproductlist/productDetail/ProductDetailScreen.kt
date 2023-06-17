@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,18 +13,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,14 +45,16 @@ import com.example.featureproductlist.navigation.ProductRoutes
 
 @Composable
 fun ProductDetailScreen(navController: NavController, viewModel: SharedProductViewModel) {
-    var selectedProduct = viewModel.productToDisplay
+    val selectedProduct = viewModel.productToDisplay
     Column {
         SchmockTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
         ) { navController.navigate(ProductRoutes.ProductListScreen.route) }
+
         Spacer(modifier = Modifier.height(12.dp))
+
         if (selectedProduct != null) {
             ImageCarousel(
                 modifier = Modifier.fillMaxWidth(),
@@ -59,8 +63,11 @@ fun ProductDetailScreen(navController: NavController, viewModel: SharedProductVi
             )
             Spacer(modifier = Modifier.height(12.dp))
             SizeSelectionGroup(
+                modifier = Modifier.fillMaxWidth(),
                 selectedSizeAtStart = selectedProduct.size
             )
+            Text(text = selectedProduct.title)
+
         }
     }
 }
@@ -129,38 +136,27 @@ private fun ImageCarousel(
     productImages: List<String>,
     description: String
 ) {
-    val lazyListState = rememberLazyListState()
-    LazyRow(
+    val state = rememberPagerState()
+    HorizontalPager(
         modifier = modifier,
-        state = lazyListState,
-        flingBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState),
-        contentPadding = PaddingValues(horizontal = 16.dp)
-    ) {
-        itemsIndexed(items = productImages) { index, link ->
-            Spacer(
-                // just to get padding between the items, not at the end & start
-                modifier = Modifier.width(
-                    when (index) {
-                        0 -> 0.dp
-                        productImages.size -> 0.dp
-                        else -> 16.dp
-                    }
-                )
-            )
-            ProductImageCard(
-                linkToImage = link,
-                productDescription = description
-            )
-        }
+        pageCount = productImages.size,
+        state = state
+    ) { index ->
+        ProductImageCard(
+            linkToImage = productImages[index],
+            productDescription = description
+        )
     }
 }
 
 @Composable
-private fun SizeSelectionGroup(selectedSizeAtStart: SizeEnum) {
+private fun SizeSelectionGroup(modifier: Modifier = Modifier, selectedSizeAtStart: SizeEnum) {
+    // just let's the group "handle itself"
     var selectedSize by remember { mutableStateOf(selectedSizeAtStart.text) }
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         getSizesAsList().forEach { sizeSymbol ->
             CircleButton(
@@ -168,7 +164,6 @@ private fun SizeSelectionGroup(selectedSizeAtStart: SizeEnum) {
                 selected = (selectedSize == sizeSymbol),
                 onClick = { selectedSize = it }
             )
-            Spacer(modifier = Modifier.width(12.dp))
         }
     }
 }
