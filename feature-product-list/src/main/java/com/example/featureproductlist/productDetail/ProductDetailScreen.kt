@@ -13,9 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,17 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.core.extensions.toCurrencyString
 import com.example.coredata.data.models.appproduct.Product
 import com.example.coredata.util.SizeEnum
 import com.example.coredata.util.getSizesAsList
 import com.example.coretheme.ui.composables.AppLogo
 import com.example.coretheme.ui.composables.CircleButton
-import com.example.coretheme.ui.composables.WrappingText
 import com.example.coretheme.ui.theme.RoundedCornerShapeWithCurvature
 import com.example.coretheme.ui.theme.lightGray
 import com.example.featureproductlist.R
@@ -47,7 +48,7 @@ import com.example.featureproductlist.navigation.ProductRoutes
 fun ProductDetailScreen(navController: NavController, viewModel: SharedProductViewModel) {
     val selectedProduct: Product = viewModel.productToDisplay
 
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         SchmockTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,18 +62,27 @@ fun ProductDetailScreen(navController: NavController, viewModel: SharedProductVi
             description = selectedProduct.title
         )
         Spacer(modifier = Modifier.height(12.dp))
-        // size buttons
         SizeSelectionGroup(
-            modifier = Modifier.fillMaxWidth(),
             selectedSizeAtStart = selectedProduct.size
         )
-        // product title
-        WrappingText(
-            modifier = Modifier.fillMaxWidth(),
-            text = selectedProduct.title,
-            textAlign = TextAlign.Center,
-            fontSize = MaterialTheme.typography.body1.fontSize
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = selectedProduct.title
         )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = selectedProduct.price.toCurrencyString(),
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = { /*TODO*/ }
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 36.dp, vertical = 6.dp),
+                text = stringResource(id = R.string.add_to_cart)
+            )
+        }
     }
 }
 
@@ -95,8 +105,6 @@ fun SchmockTopAppBar(modifier: Modifier = Modifier, onNavIconClicked: () -> Unit
         )
         AppLogo(
             modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
                 .constrainAs(appIcon) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
