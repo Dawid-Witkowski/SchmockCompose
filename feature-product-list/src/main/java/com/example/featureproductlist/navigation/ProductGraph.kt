@@ -10,7 +10,6 @@ import com.example.featureproductlist.SharedProductViewModel
 import com.example.featureproductlist.productDetail.ProductDetailScreen
 import com.example.featureproductlist.productList.ProductListScreen
 
-
 fun NavGraphBuilder.productGraph(
     navController: NavController
 ) {
@@ -22,7 +21,6 @@ fun NavGraphBuilder.productGraph(
             val parentEntry = remember(it) {
                 navController.getBackStackEntry(ProductRoutes.ProductGraph.route)
             }
-            // todo: CHECK IF THIS IS A VALID SOLUTION!!!
             // Returns an existing HiltViewModel
             // -annotated ViewModel or creates a new one scoped to the current navigation graph
             // present on the {@link NavController} back stack.

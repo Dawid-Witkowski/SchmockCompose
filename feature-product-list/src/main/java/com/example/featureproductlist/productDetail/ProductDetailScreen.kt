@@ -2,11 +2,9 @@ package com.example.featureproductlist.productDetail
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,16 +24,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.coredata.data.models.appproduct.Product
 import com.example.coredata.util.SizeEnum
 import com.example.coredata.util.getSizesAsList
+import com.example.coretheme.ui.composables.AppLogo
 import com.example.coretheme.ui.composables.CircleButton
+import com.example.coretheme.ui.composables.WrappingText
 import com.example.coretheme.ui.theme.RoundedCornerShapeWithCurvature
 import com.example.coretheme.ui.theme.lightGray
 import com.example.featureproductlist.R
@@ -45,60 +45,62 @@ import com.example.featureproductlist.navigation.ProductRoutes
 
 @Composable
 fun ProductDetailScreen(navController: NavController, viewModel: SharedProductViewModel) {
-    val selectedProduct = viewModel.productToDisplay
+    val selectedProduct: Product = viewModel.productToDisplay
+
     Column {
         SchmockTopAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
         ) { navController.navigate(ProductRoutes.ProductListScreen.route) }
-
         Spacer(modifier = Modifier.height(12.dp))
-
-        if (selectedProduct != null) {
-            ImageCarousel(
-                modifier = Modifier.fillMaxWidth(),
-                productImages = selectedProduct.images,
-                description = selectedProduct.title
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            SizeSelectionGroup(
-                modifier = Modifier.fillMaxWidth(),
-                selectedSizeAtStart = selectedProduct.size
-            )
-            Text(text = selectedProduct.title)
-
-        }
+        // product images
+        ImageCarousel(
+            modifier = Modifier.fillMaxWidth(),
+            productImages = selectedProduct.images,
+            description = selectedProduct.title
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        // size buttons
+        SizeSelectionGroup(
+            modifier = Modifier.fillMaxWidth(),
+            selectedSizeAtStart = selectedProduct.size
+        )
+        // product title
+        WrappingText(
+            modifier = Modifier.fillMaxWidth(),
+            text = selectedProduct.title,
+            textAlign = TextAlign.Center,
+            fontSize = MaterialTheme.typography.body1.fontSize
+        )
     }
 }
-
 
 @Composable
 fun SchmockTopAppBar(modifier: Modifier = Modifier, onNavIconClicked: () -> Unit) {
     ConstraintLayout(modifier = modifier) {
         val (navIcon, appIcon) = createRefs()
-        Icon(modifier = Modifier
-            .width(25.dp)
-            .height(25.dp)
-            .constrainAs(navIcon) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-            .clickable { onNavIconClicked() },
+        Icon(
+            modifier = Modifier
+                .width(25.dp)
+                .height(25.dp)
+                .constrainAs(navIcon) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+                .clickable { onNavIconClicked() },
             painter = painterResource(id = com.example.coretheme.R.drawable.ic_arrow_back),
             contentDescription = stringResource(id = R.string.returnToProductList)
         )
-        Image(
+        AppLogo(
             modifier = Modifier
                 .width(50.dp)
                 .height(50.dp)
                 .constrainAs(appIcon) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                },
-            painter = painterResource(id = com.example.coretheme.R.drawable.schmock_logo),
-            contentDescription = stringResource(id = R.string.appName)
+                }
         )
     }
 }
@@ -113,7 +115,7 @@ private fun ProductImageCard(
         modifier = modifier,
         shape = RoundedCornerShapeWithCurvature.large,
         border = BorderStroke(width = 1.dp, color = lightGray),
-        elevation = 10.dp,
+        elevation = 10.dp
     ) {
         AsyncImage(
             modifier = Modifier

@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedProductViewModel @Inject constructor(
     private val repository: FakeShopRepository
-): ViewModel() {
+) : ViewModel() {
 
     var productList = mutableStateOf<List<Product>>(listOf())
     var loadErrorMessage = mutableStateOf("")
@@ -23,7 +23,7 @@ class SharedProductViewModel @Inject constructor(
     private var cachedProductList = listOf<Product>()
     private var isSearchStarting = true // only true if the search field is empty
 
-    var productToDisplay: Product? = null
+    lateinit var productToDisplay: Product
         private set
 
     init {
@@ -31,17 +31,17 @@ class SharedProductViewModel @Inject constructor(
     }
 
     fun searchProductList(query: String) {
-        val listToSearch = if(isSearchStarting) productList.value else cachedProductList
+        val listToSearch = if (isSearchStarting) productList.value else cachedProductList
         viewModelScope.launch(Dispatchers.Default) {
-            if(query.isEmpty()) {
+            if (query.isEmpty()) {
                 productList.value = cachedProductList
                 isSearchStarting = true
                 return@launch
             }
-            val searchResults = listToSearch.filter {product ->
+            val searchResults = listToSearch.filter { product ->
                 product.title.startsWith(query.trim(), ignoreCase = true)
             }
-            if(isSearchStarting) {
+            if (isSearchStarting) {
                 cachedProductList = productList.value
                 isSearchStarting = false
             }
@@ -49,15 +49,15 @@ class SharedProductViewModel @Inject constructor(
         }
     }
 
-    private fun getAllProducts(){
+    private fun getAllProducts() {
         viewModelScope.launch {
             isLoading.value = true
             val result = repository.getAllProductsList()
-            when(result.status) {
+            when (result.status) {
                 Resource.Status.ERROR -> {
-                    // I know !! is not normally used BUT I HANDLED THAT in
+                    // I know it's not normally used BUT I HANDLED THAT in
                     // FakeShopRepositoryImpl, so please take that into consideration
-                    loadErrorMessage.value = result.message!!
+                    loadErrorMessage.value = requireNotNull(result.message)
                     isLoading.value = false
                 }
                 Resource.Status.SUCCESS -> {
@@ -74,5 +74,4 @@ class SharedProductViewModel @Inject constructor(
     fun selectProductToDisplay(product: Product) {
         productToDisplay = product
     }
-
 }

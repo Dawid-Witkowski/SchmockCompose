@@ -9,11 +9,11 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 
-//private val DarkColorPalette = darkColors(
+// private val DarkColorPalette = darkColors(
 //    primary = Purple200,
 //    primaryVariant = Purple700,
 //    secondary = Teal200
-//)
+// )
 
 private val LightColorPalette = lightColors(
     primary = schmockPurple,

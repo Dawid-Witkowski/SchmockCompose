@@ -1,24 +1,32 @@
 package com.example.coretheme.ui.composables
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 
+// got bored of writing overflow everywhere
 @Composable
 fun WrappingText(
-    textToDisplay: String,
+    text: String,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,
-    color: Color = Color.Black
+    fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
+    color: Color = Color.Black,
+    textAlign: TextAlign = TextAlign.Start
 ) {
     Text(
         modifier = modifier,
-        text = textToDisplay,
+        text = text,
         color = color,
         overflow = TextOverflow.Ellipsis,
+        fontSize = fontSize,
+        textAlign = textAlign,
         fontWeight = fontWeight,
         maxLines = 1
     )
