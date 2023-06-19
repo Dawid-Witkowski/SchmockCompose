@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -149,6 +150,10 @@ private fun ImageCarousel(
     val state = rememberPagerState()
     HorizontalPager(
         modifier = modifier,
+        // calculating those values for different screen sizes would be best,
+        // todo: consider supporting tablets etc.?
+        contentPadding = PaddingValues(horizontal = 64.dp),
+        pageSpacing = 16.dp,
         pageCount = productImages.size,
         state = state
     ) { index ->
