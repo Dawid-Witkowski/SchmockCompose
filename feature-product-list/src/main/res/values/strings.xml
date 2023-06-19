@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_for_items">Search for items</string>
+    <string name="returnToProductList">return to product list</string>
+    <string name="appName">schmock</string>
+    <string name="add_to_cart">Add to cart</string>
+</resources>
