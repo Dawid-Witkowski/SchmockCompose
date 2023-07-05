@@ -18,7 +18,8 @@ fun WrappingText(
     fontWeight: FontWeight = FontWeight.Normal,
     fontSize: TextUnit = MaterialTheme.typography.body2.fontSize,
     color: Color = Color.Black,
-    textAlign: TextAlign = TextAlign.Start
+    textAlign: TextAlign = TextAlign.Start,
+    maxLines: Int = 1
 ) {
     Text(
         modifier = modifier,
@@ -28,6 +29,6 @@ fun WrappingText(
         fontSize = fontSize,
         textAlign = textAlign,
         fontWeight = fontWeight,
-        maxLines = 1
+        maxLines = maxLines
     )
 }

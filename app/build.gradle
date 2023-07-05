@@ -72,4 +72,7 @@ dependencies {
     // DI
     implementation "com.google.dagger:hilt-android:2.44"
     kapt "com.google.dagger:hilt-compiler:2.44"
+
+    // memory leak detection
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 }

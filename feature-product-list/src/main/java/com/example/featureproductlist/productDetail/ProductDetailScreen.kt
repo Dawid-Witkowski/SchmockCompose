@@ -68,7 +68,8 @@ fun ProductDetailScreen(navController: NavController, viewModel: SharedProductVi
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = selectedProduct.title
+            text = selectedProduct.title,
+            maxLines = 3
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
@@ -81,7 +82,7 @@ fun ProductDetailScreen(navController: NavController, viewModel: SharedProductVi
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 36.dp, vertical = 6.dp),
-                text = stringResource(id = R.string.add_to_cart)
+                text = stringResource(id = R.string.addToCart)
             )
         }
     }
