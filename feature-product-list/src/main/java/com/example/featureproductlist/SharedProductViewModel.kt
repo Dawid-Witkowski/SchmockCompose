@@ -1,75 +1,70 @@
 package com.example.featureproductlist
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.util.Resource
 import com.example.coredata.data.models.appproduct.Product
-import com.example.coredata.data.remote.repository.FakeShopRepository
+import com.example.coredata.data.remote.useCase.GetProductListUseCase
+import com.example.featureproductlist.productList.ProductListStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SharedProductViewModel @Inject constructor(
-    private val repository: FakeShopRepository
+    private val getProductListUseCase: GetProductListUseCase
 ) : ViewModel() {
 
-    var productList = mutableStateOf<List<Product>>(listOf())
-    var loadErrorMessage = mutableStateOf("")
-    var isLoading = mutableStateOf(false)
+    private val _state = mutableStateOf(ProductListStateHolder())
+    val state: State<ProductListStateHolder> get() = _state
 
+    // keeping cache in any form > calling the api on every search, also does not require debouncing
     private var cachedProductList = listOf<Product>()
-    private var isSearchStarting = true // only true if the search field is empty
 
+    // product that will get displayed when the user clicks on a product
     lateinit var productToDisplay: Product
-        private set
 
     init {
         getAllProducts()
     }
 
     fun searchProductList(query: String) {
-        val listToSearch = if (isSearchStarting) productList.value else cachedProductList
-        viewModelScope.launch(Dispatchers.Default) {
-            if (query.isEmpty()) {
-                productList.value = cachedProductList
-                isSearchStarting = true
-                return@launch
-            }
-            val searchResults = listToSearch.filter { product ->
-                product.title.startsWith(query.trim(), ignoreCase = true)
-            }
-            if (isSearchStarting) {
-                cachedProductList = productList.value
-                isSearchStarting = false
-            }
-            productList.value = searchResults
+        val searchResults = cachedProductList.filter { product ->
+            product.title.startsWith(query.trim(), ignoreCase = true)
         }
+        _state.value = ProductListStateHolder(
+            currentlyDisplayedProductList = searchResults
+        )
     }
 
-    private fun getAllProducts() {
-        viewModelScope.launch {
-            isLoading.value = true
-            val result = repository.getAllProductsList()
-            when (result.status) {
-                Resource.Status.ERROR -> {
-                    // I know it's not normally used BUT I HANDLED THAT in
-                    // FakeShopRepositoryImpl, so please take that into consideration
-                    loadErrorMessage.value = requireNotNull(result.message)
-                    isLoading.value = false
+
+    private fun getAllProducts() = viewModelScope.launch {
+        getProductListUseCase().onEach {
+            when (it.status) {
+                Resource.Status.LOADING -> {
+                    _state.value = ProductListStateHolder(isLoading = true)
                 }
+
                 Resource.Status.SUCCESS -> {
-                    // using .!! would here be reasonable, but if the API somehow messes up and
-                    // responds with no products I don't want the app to crash
-                    productList.value = result.data ?: emptyList()
-                    isLoading.value = false
-                    loadErrorMessage.value = ""
+                    _state.value = ProductListStateHolder(
+                        isLoading = false,
+                        currentlyDisplayedProductList = it.data ?: emptyList()
+                    )
+                    cachedProductList = it.data ?: emptyList()
+                }
+
+                Resource.Status.ERROR -> {
+                    _state.value =
+                        ProductListStateHolder(isLoading = false, error = it.message.toString())
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
+
 
     fun selectProductToDisplay(product: Product) {
         productToDisplay = product

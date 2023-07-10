@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.core.Const
 import com.example.core.extensions.toCurrencyString
 import com.example.coredata.data.models.appproduct.Product
 import com.example.coredata.util.SizeEnum
@@ -43,7 +44,6 @@ import com.example.coretheme.ui.theme.RoundedCornerShapeWithCurvature
 import com.example.coretheme.ui.theme.lightGray
 import com.example.featureproductlist.R
 import com.example.featureproductlist.SharedProductViewModel
-import com.example.featureproductlist.navigation.ProductRoutes
 
 @Composable
 fun ProductDetailScreen(navController: NavController, viewModel: SharedProductViewModel) {
@@ -54,7 +54,7 @@ fun ProductDetailScreen(navController: NavController, viewModel: SharedProductVi
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
-        ) { navController.navigate(ProductRoutes.ProductListScreen.route) }
+        ) { navController.navigate(Const.productListScreen) }
         Spacer(modifier = Modifier.height(12.dp))
         // product images
         ImageCarousel(

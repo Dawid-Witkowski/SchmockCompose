@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.core.Const
 import com.example.core.extensions.toCurrencyString
 import com.example.coredata.data.models.appproduct.Product
 import com.example.coretheme.ui.composables.BoxWithLoadingIndicator
@@ -46,7 +47,6 @@ import com.example.coretheme.ui.composables.WrappingText
 import com.example.coretheme.ui.theme.RoundedCornerShapeWithCurvature
 import com.example.featureproductlist.R
 import com.example.featureproductlist.SharedProductViewModel
-import com.example.featureproductlist.navigation.ProductRoutes
 
 @Composable
 fun ProductListScreen(
@@ -54,15 +54,16 @@ fun ProductListScreen(
     navController: NavController,
     viewModel: SharedProductViewModel
 ) {
-    val productList by remember { viewModel.productList }
-    val loadError by remember { viewModel.loadErrorMessage }
-    val isLoading by remember { viewModel.isLoading }
+    val state = viewModel.state.value
 
     val scrollState = rememberLazyGridState()
 
-    // an error occurred, display the message
-    if (loadError.isNotBlank()) {
-        Toast.makeText(LocalContext.current, loadError, Toast.LENGTH_LONG).show()
+    if (!state.error.isNullOrEmpty()) {
+        Toast.makeText(
+            LocalContext.current,
+            state.error ?: stringResource(R.string.unexpectedError),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     Column(
@@ -70,10 +71,12 @@ fun ProductListScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        if (isLoading) {
+        if (state.isLoading) {
             BoxWithLoadingIndicator()
         } else {
-            TopAppBar(onSearchChanged = { viewModel.searchProductList(it) })
+            TopAppBar(onSearchChanged = {
+                viewModel.searchProductList(it)
+            })
             Spacer(modifier = Modifier.height(16.dp))
             LazyVerticalGrid(
                 state = scrollState,
@@ -82,13 +85,12 @@ fun ProductListScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(productList) { productToDisplay ->
-                    ProductItem(
-                        product = productToDisplay,
+                items(state.currentlyDisplayedProductList) { productToDisplay ->
+                    ProductItem(product = productToDisplay,
                         modifier = Modifier.fillMaxWidth(),
                         onProductClick = {
                             viewModel.selectProductToDisplay(productToDisplay)
-                            navController.navigate(ProductRoutes.ProductDetailScreen.route)
+                            navController.navigate(Const.productDetailScreen)
                         },
                         onFavouritesClick = { /* todo: faviourites */ }
                     )
@@ -153,7 +155,6 @@ private fun ProductItem(
             }
         }
     }
-
 }
 
 @Composable

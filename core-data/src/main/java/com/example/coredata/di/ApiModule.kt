@@ -4,6 +4,7 @@ import com.example.core.Const
 import com.example.coredata.data.remote.FakeShopApi
 import com.example.coredata.data.remote.FakeShopRepositoryImpl
 import com.example.coredata.data.remote.repository.FakeShopRepository
+import com.example.coredata.data.remote.useCase.GetProductListUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -29,6 +30,11 @@ abstract class ApiModule {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(FakeShopApi::class.java)
+        }
+
+        @Provides
+        fun provideProductUseCase(productRepository: FakeShopRepository): GetProductListUseCase {
+            return GetProductListUseCase(productRepository)
         }
     }
 }

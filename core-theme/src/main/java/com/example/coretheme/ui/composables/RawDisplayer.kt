@@ -1,6 +1,5 @@
 package com.example.coretheme.ui.composables
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +21,6 @@ fun RawImage(
             .data(resource)
             .build(),
         contentDescription = contentDescription,
-        contentScale = contentScale,
+        contentScale = contentScale
     )
 }
